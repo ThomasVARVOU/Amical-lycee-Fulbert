@@ -104,39 +104,47 @@
     $req = $bdd->prepare('SELECT max(idcommentaire) AS idcommentaire FROM commentaire;');
     $req->execute();
     $compteur = $req->fetch();
-    //echo $compteur['idcommentaire'];
-    while($compteur['idcommentaire'] >= 0)
+    //echo 'toto'. $compteur['idcommentaire'] . 'totos';
+    if(isset($compteur['idcommentaire']))
     {
-        //echo 'boucle 2' . $compteur['idcommentaire'] . '';
-        $test = $bdd->prepare('SELECT idrecette FROM commentaire WHERE idcommentaire = :compteur;');
-        $test->execute(array(
-           'compteur' => $compteur['idcommentaire']));
-        $verif = $test->fetch();
-        if($id == $verif['idrecette'])
-        {
-          $user = $bdd->prepare('SELECT nom, prenom FROM utilisateur INNER JOIN commentaire WHERE idcommentaire = :compteur;');
-          $user->execute(array(
+      while($compteur['idcommentaire'] >= 0)
+      {
+          //echo 'boucle 2' . $compteur['idcommentaire'] . '';
+          //echo $compteur['idcommentaire'];
+          $test = $bdd->prepare('SELECT idrecette FROM commentaire WHERE idcommentaire = :compteur;');
+          $test->execute(array(
              'compteur' => $compteur['idcommentaire']));
-          $trois = $user->fetch();
-          //echo'boucle';
-          echo'<p style="color:#FF0000";>'. $trois['nom'] . ' '. $trois['prenom'] .'text</p>';
-          $com = $bdd->prepare('SELECT commentaire, idUtilisateur, idcommentaire FROM commentaire WHERE idcommentaire = :compteur;');
-          $com->execute(array(
-             'compteur' => $compteur['idcommentaire']));
-          $coco = $com->fetch();
-          //echo'<p style="color:#778899;">' . $compteur['idcommentaire'] . '</p>';
-          echo '       '. $coco['commentaire'] . '';
-          if($coco['idUtilisateur'] == $_SESSION['id'])
+          $verif = $test->fetch();
+          if($id == $verif['idrecette'])
           {
-            echo'</br>';
-            echo'<a href="modifierCommentaire.php?idcommentaire=' . $coco['idcommentaire'] . '">Modifier</a>';
-            echo'</br>';
-            echo'<a href="supprimerCommentaire.php?idcommentaire=' . $coco['idcommentaire'] . '">Supprimer</a>';
-            echo'</br>';
+            $user = $bdd->prepare('SELECT nom, prenom FROM utilisateur INNER JOIN commentaire WHERE idcommentaire = :compteur;');
+            $user->execute(array(
+               'compteur' => $compteur['idcommentaire']));
+            $trois = $user->fetch();
+            //echo'boucle';
+            echo'<p style="color:#FF0000";>'. $trois['nom'] . ' '. $trois['prenom'] .'</p>';
+            $com = $bdd->prepare('SELECT commentaire, idUtilisateur, idcommentaire FROM commentaire WHERE idcommentaire = :compteur;');
+            $com->execute(array(
+               'compteur' => $compteur['idcommentaire']));
+            $coco = $com->fetch();
+            //echo'<p style="color:#778899;">' . $compteur['idcommentaire'] . '</p>';
+            echo '       '. $coco['commentaire'] . '';
+            if(!empty($_SESSION['id']))
+            {
+              if($coco['idUtilisateur'] == $_SESSION['id'])
+              {
+                echo'</br>';
+                echo'<a href="modifierCommentaire.php?idcommentaire=' . $coco['idcommentaire'] . '">Modifier</a>';
+                echo'</br>';
+                echo'<a href="supprimerCommentaire.php?idcommentaire=' . $coco['idcommentaire'] . '">Supprimer</a>';
+                echo'</br>';
+              }
+            }
           }
-        }
-        $compteur['idcommentaire']--;
-    }
+          $compteur['idcommentaire']--;
+
+      }
+     }
   }
   function postCommentaire($id)
   {
@@ -150,8 +158,58 @@
     $user->execute(array(
              'id' => $id));
     $trois = $user->fetch();
-    echo'<form name="modification" method="post" action="cibleModifierCompte.php">';
-    echo'<textarea rows="8" cols="100" name=modiffier id="modifier" value="'. $trois['commentaire'] . '></textarea>';
+    echo'<form name="modification" method="post" action="cibleModifierCommentaire.php">';
+    echo'<input type="hidden" name="test" id="test" value="'. $id . '"/>';
+    echo'<textarea rows="8" cols="100" name=modiffier id="modifier" >'. $trois['commentaire'] . '</textarea>';
     echo'<center><input type="submit" name="ok" value="Envoyer"/></center>';
+  }
+  function verifRecette($id)
+  {
+    $bdd = connexionBDD();
+    $user = $bdd->prepare('SELECT idUtilisateur FROM recettes WHERE idrecette = :id;');
+    $user->execute(array(
+             'id' => $id));
+    $trois = $user->fetch();
+    if(isset($_SESSION['id']))
+    {
+      if($trois['idUtilisateur'] == $_SESSION['id'])
+      {
+        echo'<a href="modifierRecette.php?idRecette='. $id . '">Modifier Recette</a></br>';
+        echo'<a href="supprimerRecette.php?idRecette='. $id . '">Supprimer Recette</a>';
+        //echo'<form name="modification" method="post" action="cibleModifierCommentaire.php">';
+        //echo'<input type="hidden" name="test" id="test" value="'. $id . '"/>';
+
+        //echo'<center><input type="submit" name="ok" value="Modifier Recette"/></center>';
+        //echo'</form>';
+      }
+    }
+  }
+  function modiffierRecette($id, $ran)
+  {
+    $bdd = connexionBDD();
+    $info = $bdd->prepare('SELECT nom, ingredients, instruction, temp FROM recettes WHERE idRecette = :recette; ');
+    $info->execute(array(
+             'recette' => $id));
+    $recipe = $info->fetch();
+    if($ran == 1)
+    {
+      echo'<input name="titre" type="text" id="titre_recette" class="right" maxlength="120" placeholder="Titre de votre recette" max="45" value="' . $recipe['nom'] . '">';
+    }
+    elseif($ran == 2)
+    {
+      echo'<textarea rows="4" cols="50" name=ingredient id="ingredient" placeholder="Insérer vos ingédient ici" max="45">' . $recipe['ingredients'] . '</textarea>';
+    }
+    elseif($ran == 3)
+    {
+      echo'<center><b>Temp en minute: </b><input type="number" name="temp" max="45" value="' . $recipe['temp'] . '"/></center> <br/> <br/>';
+    }
+    elseif($ran == 4)
+    {
+      echo'<input type="hidden" name="test" id="test" value="'. $id . '"/>';
+    }
+    else
+    {
+      echo'<textarea rows="8" cols="100" name=preparation id="ingredient" placeholder="Préparation" max="150">' . $recipe['instruction'] . '</textarea>';
+    }
   }
 ?>

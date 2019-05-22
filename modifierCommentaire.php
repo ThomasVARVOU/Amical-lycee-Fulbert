@@ -75,19 +75,19 @@
     </nav>
 
   <div class="jumbotron jumbotron-fluid text-center">
-<p class="lead">Mon compte</p>
+<p class="lead">Modifier commentaire</p>
        <hr class="my-4">
 </div>
     <div class="container">
        <div class="row text-center"> </div>
        <br>
-         
+
             <p>
               <?php
                 include_once ('fonction.php');
                 modifierCommentaire($_GET['idcommentaire']);
               ?>
-              
+
             </p>
        <hr>
        <br>

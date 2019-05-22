@@ -10,7 +10,7 @@
     <title>Amical Lycée Fulbert</title>
 
     <!-- Bootstrap -->
-    <link href="css/bootstrap-4.2.1.css" rel="stylesheet">
+    <link href="css/Nrecette.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="icon.png" />
 
   </head>
@@ -74,91 +74,40 @@
        </div>
     </nav>
 
-  <div class="jumbotron jumbotron-fluid text-center">
-<p class="lead">Le syte de partage de recette du lycée Fulbert</p>
-       <hr class="my-4">
-</div>
-    <div class="container">
-       <div class="row text-center"> </div>
-       <br>
-       <?php
-          include_once ('fonction.php');
-          verifRecette($_GET['idRecette']);
-       ?>
-       <br>
-       <br>
-		<?php
-      include_once ('fonction.php');
-      $bdd = connexionBDD();
-      $req = $bdd->prepare('SELECT nom FROM recettes WHERE idrecette = :id;');
-      $req->execute(array('id' => $_GET['idRecette']));
-      $romain = $req->fetch();
-      $use ='<strong>'. $romain['nom'] . '</strong>';
-      echo $use;
-      //var_dump($romain);
+    <div class="jumbotron jumbotron-fluid text-center">
+      <blockquote>
+        <pre class="lead text-capitalize"><strong>Nouvelle Recette</strong></pre>
 
-		?>
-<br/>
-<br/>
-<br/>
-      <strong>Ingredient: </strong>
-       <br/>
-       <?php
-          include_once ('fonction.php');
-          $bdd = connexionBDD();
-          $req = $bdd->prepare('SELECT ingredients FROM recettes WHERE idrecette = :id;');
-          $req->execute(array('id' => $_GET['idRecette']));
-          $theo = $req->fetch();
-          echo $theo['ingredients'];
+
+      </blockquote>
+		<form method="post" action="recRecette.php">
+			<?php
+        include_once('fonction.php');
+        modiffierRecette($_GET['idRecette'], 1);
       ?>
-<br/>
-      <strong>Temp de préparation: </strong>
-       <br/>
-       <?php
-          include_once ('fonction.php');
-          $bdd = connexionBDD();
-          $req = $bdd->prepare('SELECT temp FROM recettes WHERE idrecette = :id;');
-          $req->execute(array('id' => $_GET['idRecette']));
-          $theo = $req->fetch();
-          echo $theo['temp']. ' minutes';
+			</br>
+			</br>
+			<?php
+        include_once('fonction.php');
+        modiffierRecette($_GET['idRecette'], 2);
       ?>
-<br/>
-    <strong>Préparation : </strong>
-<br/>
-      <?php
-          include_once ('fonction.php');
-          $bdd = connexionBDD();
-          $req = $bdd->prepare('SELECT instruction FROM recettes WHERE idrecette = :id;');
-          $req->execute(array('id' => $_GET['idRecette']));
-          $theo = $req->fetch();
-          echo $theo['instruction'];
+			</br>
+			</br>
+			<?php
+        include_once('fonction.php');
+        modiffierRecette($_GET['idRecette'], 3);
+        modiffierRecette($_GET['idRecette'], 5);
+        modiffierRecette($_GET['idRecette'], 4);
       ?>
-      <br/>
-        <strong>Commentaire : </strong>
-      <br/>
-      <?php
-        include_once ('fonction.php');
-        commentaireView($_GET['idRecette']);
-      ?>
-      <?php
-        include_once ('fonction.php');
-        postCommentaire($_GET['idRecette']);
-      ?>
-      <textarea rows="4" cols="50" name=posterCommentaire id="commentaire" placeholder="Poster un commentaire"></textarea>
-      </br>
-          <input type="hidden" name="var1" value="<?php echo "".$_GET['idRecette']."" ?>"></input>
-      </br>
-      <input type="submit" value="Enregistrer" />
-    </form>
-       <hr>
-       <div class="row">
-          <div class="text-center col-lg-6 offset-lg-3">
-             <h4>Footer </h4>
-             <p>Copyright &copy; 2015 &middot; All Rights Reserved &middot; <a href="#" >My Website</a></p>
-          </div>
-       </div>
+
+			</br>
+			</br>
+			<input type="submit" value="Enregistrer" />
+		</form>
+      <hr class="my-4">
+<p class="lead">&nbsp; </p>
     </div>
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="js/jquery-3.3.1.min.js"></script>
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
